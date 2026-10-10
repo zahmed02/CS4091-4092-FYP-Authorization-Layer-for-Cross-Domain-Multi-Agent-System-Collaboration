@@ -1,0 +1,48 @@
+﻿# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+dist/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.sqlite3
+
+# ---------- Node / Frontend ----------
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ---------- Env / Secrets ----------
+.env
+.env.*
+!.env.example
+infra/docker/*.env
+!infra/docker/*.env.example
+*.pem
+*.key
+
+# ---------- Benchmark outputs ----------
+benchmark/results/*
+!benchmark/results/.gitkeep
+
+# ---------- IDE / OS ----------
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ---------- Logs ----------
+*.log
+logs/

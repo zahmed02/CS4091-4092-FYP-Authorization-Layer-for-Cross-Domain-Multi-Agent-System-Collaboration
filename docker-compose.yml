@@ -1,0 +1,56 @@
+﻿version: "3.9"
+
+services:
+  redis-domain-a:
+    image: redis:7.4-alpine
+    container_name: redis-domain-a
+    ports: ["6379:6379"]
+    volumes: ["redis_a_data:/data"]
+
+  postgres-domain-a:
+    image: postgres:17-alpine
+    container_name: postgres-domain-a
+    environment:
+      POSTGRES_DB: authlayer_domain_a
+      POSTGRES_USER: authlayer
+      POSTGRES_PASSWORD: changeme_a
+    ports: ["5432:5432"]
+    volumes: ["pg_a_data:/var/lib/postgresql/data"]
+
+  redis-domain-b:
+    image: redis:7.4-alpine
+    container_name: redis-domain-b
+    ports: ["6380:6379"]
+    volumes: ["redis_b_data:/data"]
+
+  postgres-domain-b:
+    image: postgres:17-alpine
+    container_name: postgres-domain-b
+    environment:
+      POSTGRES_DB: authlayer_domain_b
+      POSTGRES_USER: authlayer
+      POSTGRES_PASSWORD: changeme_b
+    ports: ["5433:5432"]
+    volumes: ["pg_b_data:/var/lib/postgresql/data"]
+
+  # backend-domain-a:      # uncomment once backend/Dockerfile + app code exist
+  #   build: ./backend
+  #   env_file: ./infra/docker/domain-a.env
+  #   ports: ["8001:8000"]
+  #   depends_on: [redis-domain-a, postgres-domain-a]
+  #
+  # backend-domain-b:
+  #   build: ./backend
+  #   env_file: ./infra/docker/domain-b.env
+  #   ports: ["8002:8000"]
+  #   depends_on: [redis-domain-b, postgres-domain-b]
+  #
+  # dashboard:
+  #   build: ./dashboard
+  #   ports: ["5173:5173"]
+
+volumes:
+  redis_a_data:
+  pg_a_data:
+  redis_b_data:
+  pg_b_data:
