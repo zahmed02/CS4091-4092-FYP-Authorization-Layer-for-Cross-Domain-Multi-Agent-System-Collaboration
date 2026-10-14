@@ -39,11 +39,22 @@ class Settings(BaseSettings):
     jwt_private_key_path: str
     jwt_public_key_path: str
 
+    # Token policy
+    token_default_ttl_seconds: int = 900
+    token_max_ttl_seconds: int = 3600
+    clock_skew_seconds: int = 5
+
+    # Admin API protection (stand-in for Team Manager authentication)
+    admin_api_key: str
+
+    # Write an audit row for every verification (can be disabled for benchmarks)
+    audit_verifications: bool = True
+
     # Service
     app_port: int = 8000
     log_level: str = "INFO"
 
-    # Optional — filled in later when the CrewAI orchestrator is wired up
+    # Optional, filled in later when the CrewAI orchestrator is wired up
     llm_provider: str | None = None
     openai_api_key: str | None = None
 

@@ -35,13 +35,13 @@ services:
   # backend-domain-a:      # uncomment once backend/Dockerfile + app code exist
   #   build: ./backend
   #   env_file: ./infra/docker/domain-a.env
-  #   ports: ["8001:8000"]
+  #   ports: ["9001:8000"]
   #   depends_on: [redis-domain-a, postgres-domain-a]
   #
   # backend-domain-b:
   #   build: ./backend
   #   env_file: ./infra/docker/domain-b.env
-  #   ports: ["8002:8000"]
+  #   ports: ["9002:8000"]
   #   depends_on: [redis-domain-b, postgres-domain-b]
   #
   # dashboard:
