@@ -46,3 +46,7 @@ desktop.ini
 # ---------- Logs ----------
 *.log
 logs/
+
+# Local editor settings and SQLTools scratch files
+.vscode/
+*.session.sql
