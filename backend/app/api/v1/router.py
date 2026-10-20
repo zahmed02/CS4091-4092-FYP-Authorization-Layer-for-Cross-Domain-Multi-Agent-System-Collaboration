@@ -1,6 +1,14 @@
 from fastapi import APIRouter
 
-from app.api.v1.routers import audit, demo, teams, tokens, trust, verify
+from app.api.v1.routers import (
+    audit,
+    demo,
+    revocations,
+    teams,
+    tokens,
+    trust,
+    verify,
+)
 
 api_router = APIRouter(prefix="/api/v1")
 
@@ -9,6 +17,7 @@ for _router in (
     teams.router,
     tokens.router,
     verify.router,
+    revocations.router,
     demo.router,
     audit.router,
 ):

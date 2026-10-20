@@ -71,12 +71,17 @@ def key_fingerprint(key: Ed25519PublicKey) -> str:
     return "SHA256:" + hashlib.sha256(raw).hexdigest()[:32]
 
 
-def sign_token(claims: dict) -> tuple[str, dict]:
-    """Sign claims with this domain's private key. Returns (jwt, header)."""
+def sign_token(claims: dict, typ: str = "JWT") -> tuple[str, dict]:
+    """
+    Sign claims with this domain's private key. Returns (jwt, header).
+
+    `typ` lets other message kinds (for example revocation notices) carry a
+    distinct header type so they can never be mistaken for capability tokens.
+    """
     token = jwt.encode(
         claims,
         get_private_key(),
         algorithm=ALGORITHM,
-        headers={"kid": settings.trust_domain_id},
+        headers={"kid": settings.trust_domain_id, "typ": typ},
     )
     return token, jwt.get_unverified_header(token)

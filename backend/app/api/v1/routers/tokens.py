@@ -15,6 +15,7 @@ from app.schemas.token import (
 )
 from app.services.issuance_service import issue_token
 from app.services.revocation_service import revoke_token
+from app.services.sync_service import propagate_revocation
 
 router = APIRouter(
     prefix="/tokens", tags=["tokens"], dependencies=[Depends(require_admin)]
@@ -43,12 +44,28 @@ async def revoke(
 ) -> RevokeTokenResponse:
     reason = body.reason if body else None
     outcome = await revoke_token(db, redis, jti, reason=reason)
+
+    # Local revocation is already in force. Now tell the trusted peers; a
+    # failure here never undoes the local revoke, it is reported per peer.
+    expires_at = outcome.entry.ttl_expires_at
+    propagation = (
+        await propagate_revocation(
+            revoked_jti=jti,
+            token_expires_at=expires_at,
+            revoked_at=outcome.entry.revoked_at,
+            reason=reason,
+        )
+        if expires_at is not None
+        else []
+    )
+
     return RevokeTokenResponse(
         jti=jti,
         revoked_at=outcome.entry.revoked_at,
         already_revoked=outcome.already_revoked,
         registry_ttl_seconds=outcome.registry_ttl_seconds,
         reason=reason,
+        propagation=propagation,
     )
 
 

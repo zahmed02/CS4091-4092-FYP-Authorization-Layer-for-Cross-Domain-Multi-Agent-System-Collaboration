@@ -1,6 +1,6 @@
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from redis.asyncio import Redis
 from redis.exceptions import RedisError
@@ -23,13 +23,39 @@ class RevocationOutcome:
     registry_ttl_seconds: int
 
 
-def _key(jti: uuid.UUID | str) -> str:
-    return f"{REVOKED_KEY_PREFIX}{jti}"
+def revocation_key(issuer: str, jti: uuid.UUID | str) -> str:
+    """
+    Registry key, namespaced by issuer: revoked:<issuer>:<jti>.
+
+    The namespace means a trusted peer can only ever revoke tokens that it
+    issued itself, never tokens issued by another domain.
+    """
+    return f"{REVOKED_KEY_PREFIX}{issuer}:{jti}"
 
 
-async def is_revoked(redis: Redis, jti: str) -> bool:
+def registry_ttl_for(expires_at: datetime) -> int:
+    """Seconds the registry entry must live: token remaining life plus skew."""
+    remaining = int((expires_at - datetime.now(UTC)).total_seconds())
+    return remaining + settings.clock_skew_seconds
+
+
+async def register_revocation(
+    redis: Redis, issuer: str, jti: uuid.UUID | str, ttl_seconds: int
+) -> bool:
+    """
+    Write a registry entry that expires on its own. Returns False when the
+    token has already expired (nothing to register). Raises RedisError if the
+    registry is unreachable.
+    """
+    if ttl_seconds <= 0:
+        return False
+    await redis.set(revocation_key(issuer, jti), "1", ex=ttl_seconds)
+    return True
+
+
+async def is_revoked(redis: Redis, issuer: str, jti: str) -> bool:
     """Check the revocation registry. Raises RedisError if it is unreachable."""
-    return bool(await redis.exists(_key(jti)))
+    return bool(await redis.exists(revocation_key(issuer, jti)))
 
 
 async def revoke_token(
@@ -44,20 +70,18 @@ async def revoke_token(
     # The registry entry only needs to live as long as the token could still be
     # accepted (expiry plus clock skew). After that it expires by itself, which
     # keeps registry memory proportional to live revoked tokens only.
-    remaining = int((token.expires_at - datetime.now(timezone.utc)).total_seconds())
-    ttl = remaining + settings.clock_skew_seconds
+    ttl = registry_ttl_for(token.expires_at)
 
     # Redis first, database second: if the database write fails afterwards the
     # token is still blocked (fail closed).
-    if ttl > 0:
-        try:
-            await redis.set(_key(jti), "1", ex=ttl)
-        except RedisError as exc:
-            raise AppError(
-                "REVOCATION_REGISTRY_UNAVAILABLE",
-                "Could not write to the revocation registry.",
-                503,
-            ) from exc
+    try:
+        await register_revocation(redis, token.issuer, jti, ttl)
+    except RedisError as exc:
+        raise AppError(
+            "REVOCATION_REGISTRY_UNAVAILABLE",
+            "Could not write to the revocation registry.",
+            503,
+        ) from exc
 
     existing = await db.get(RevocationEntry, jti)
     if existing is not None:
@@ -71,6 +95,7 @@ async def revoke_token(
         team_id=token.team_id,
         token_id=jti,
         detail={
+            "source": "local",
             "jti": jti,
             "reason": reason,
             "registry_ttl_seconds": max(ttl, 0),

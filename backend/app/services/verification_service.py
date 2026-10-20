@@ -201,7 +201,7 @@ async def _run_pipeline(
     # 7. revocation (fails closed)
     t0 = time.perf_counter()
     try:
-        revoked = await is_revoked(redis, str(claims["jti"]))
+        revoked = await is_revoked(redis, kid, str(claims["jti"]))
     except RedisError:
         _step(
             steps,
@@ -214,9 +214,13 @@ async def _run_pipeline(
     if revoked:
         _step(steps, "revocation", False, "Token id is in the revocation registry.", t0)
         return "TOKEN_REVOKED"
-    note = "Not in this domain's revocation registry."
-    if kid != own:
-        note += " (Local registry only: cross-domain revocation sync is not built yet.)"
+    if kid == own:
+        note = "Not in this domain's revocation registry."
+    else:
+        note = (
+            f"Not revoked in this domain's registry "
+            f"(includes notices synced from '{kid}')."
+        )
     _step(steps, "revocation", True, note, t0)
 
     return None

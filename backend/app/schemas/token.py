@@ -4,6 +4,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from app.schemas.sync import PeerSyncResult
+
 
 class IssueTokenRequest(BaseModel):
     team_id: uuid.UUID
@@ -35,6 +37,7 @@ class RevokeTokenResponse(BaseModel):
     already_revoked: bool
     registry_ttl_seconds: int
     reason: str | None = None
+    propagation: list[PeerSyncResult] = Field(default_factory=list)
 
 
 class TokenSummary(BaseModel):

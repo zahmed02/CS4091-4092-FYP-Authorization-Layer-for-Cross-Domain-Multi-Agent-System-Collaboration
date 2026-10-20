@@ -50,6 +50,13 @@ class Settings(BaseSettings):
     # Write an audit row for every verification (can be disabled for benchmarks)
     audit_verifications: bool = True
 
+    # Cross-domain revocation sync.
+    # Comma-separated "domain-name=base-url" pairs of peers to notify, e.g.
+    #   PEER_ENDPOINTS=domain-b=http://127.0.0.1:9002
+    peer_endpoints: str = ""
+    peer_sync_timeout_seconds: float = 3.0
+    revocation_notice_ttl_seconds: int = 300
+
     # Service
     app_port: int = 8000
     log_level: str = "INFO"
@@ -65,6 +72,20 @@ class Settings(BaseSettings):
     @property
     def jwt_public_key_full_path(self) -> Path:
         return (BACKEND_DIR / self.jwt_public_key_path).resolve()
+
+    @property
+    def peer_endpoint_map(self) -> dict[str, str]:
+        """Parsed PEER_ENDPOINTS as {peer domain name: base url}."""
+        peers: dict[str, str] = {}
+        for item in self.peer_endpoints.split(","):
+            item = item.strip()
+            if not item or "=" not in item:
+                continue
+            name, url = item.split("=", 1)
+            name, url = name.strip(), url.strip().rstrip("/")
+            if name and url and name != self.trust_domain_id:
+                peers[name] = url
+        return peers
 
 
 @lru_cache
