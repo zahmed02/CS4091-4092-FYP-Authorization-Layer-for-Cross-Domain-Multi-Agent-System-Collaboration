@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.api.v1.routers import (
     audit,
+    collab,
     demo,
     revocations,
     teams,
@@ -19,6 +20,7 @@ for _router in (
     verify.router,
     revocations.router,
     demo.router,
+    collab.router,
     audit.router,
 ):
     api_router.include_router(_router)
