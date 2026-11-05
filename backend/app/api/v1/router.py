@@ -4,6 +4,7 @@ from app.api.v1.routers import (
     audit,
     collab,
     demo,
+    metrics,
     revocations,
     teams,
     tokens,
@@ -21,6 +22,7 @@ for _router in (
     revocations.router,
     demo.router,
     collab.router,
+    metrics.router,
     audit.router,
 ):
     api_router.include_router(_router)

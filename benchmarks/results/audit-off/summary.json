@@ -1,0 +1,90 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-11-03T17:56:16.115464+00:00",
+    "python": "3.13.15",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "cpu_count": 8,
+    "sizes": [
+      10,
+      50,
+      100,
+      250,
+      500
+    ],
+    "team_count": 5,
+    "baseline_model": {
+      "attributes_per_agent_k": 8,
+      "revocation_entries_per_agent_r": 100
+    },
+    "llm_tokens_used": 0,
+    "join_rate_per_s": 20.0,
+    "sweep_agents": 200,
+    "sweep_rates_per_s": [
+      10.0,
+      25.0,
+      50.0,
+      100.0,
+      200.0
+    ],
+    "per_agent": 15,
+    "repeats": 3
+  },
+  "server_domain_b": {
+    "audit_verifications": false
+  },
+  "token_size_bytes": 457,
+  "token_issue_ms_mean": 30.922,
+  "total_run_seconds": 358.9,
+  "checks": {
+    "memory_scaling": {
+      "target": "RSS within +/-5.0% of baseline for all agent counts",
+      "worst_abs_change_pct": 1.404,
+      "rss_growth_first_to_last_mib": 1.035,
+      "redis_keys_min_max": [
+        0,
+        0
+      ],
+      "pass": true
+    },
+    "join_latency": {
+      "target": "P95 < 100.0 ms at every agent count (arrival rate 20 joins/s)",
+      "worst_p95_ms": 53.607,
+      "join_errors": 0,
+      "sweep_max_rate_with_p95_under_limit": 50.0,
+      "sweep_p95_ms_by_rate": {
+        "10": 26.56,
+        "25": 31.64,
+        "50": 47.49,
+        "100": 201.53,
+        "200": 1300.74
+      },
+      "pass": true
+    },
+    "verification_overhead": {
+      "target": "verification time <= 15.0% of a protected request",
+      "overhead_pct": 11.407,
+      "mean_verification_ms": 1.4702,
+      "mean_join_round_trip_ms": 12.8881,
+      "mean_health_round_trip_ms": 2.8002,
+      "pass": true
+    },
+    "throughput": {
+      "target": "throughput drop < 20.0% beyond 100 agents",
+      "reference_rps": 268.06,
+      "median_rps_by_agents": {
+        "10": 263.53,
+        "50": 231.07,
+        "100": 268.06,
+        "250": 200.48,
+        "500": 160.69
+      },
+      "drop_pct_by_agents": {
+        "250": 25.212,
+        "500": 40.056
+      },
+      "worst_drop_pct": 40.056,
+      "errors": 0,
+      "pass": false
+    }
+  }
+}
