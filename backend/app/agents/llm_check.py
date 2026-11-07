@@ -35,7 +35,7 @@ def main() -> int:
     client = Groq(api_key=key)
     try:
         available = sorted(m.id for m in client.models.list().data)
-    except Exception as exc:  # network, auth, rate limit
+    except Exception as exc:  # noqa: BLE001 - network, auth, rate limit
         print(f"Could not list models: {type(exc).__name__}: {exc}")
         return 1
     print(f"Key accepted. {len(available)} models available.")
@@ -61,7 +61,7 @@ def main() -> int:
             max_completion_tokens=800,
             extra_body=extra or None,
         )
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - report any failure
         print(f"Chat call failed: {type(exc).__name__}: {exc}")
         return 1
     ms = (time.perf_counter() - t0) * 1000

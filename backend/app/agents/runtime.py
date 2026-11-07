@@ -7,11 +7,11 @@ import asyncio
 import json
 import os
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Protocol
 
-from app.agents.client import DomainClient, Reply
+from app.agents.client import Reply
 
 URL_A = os.environ.get("DOMAIN_A_URL", "http://127.0.0.1:9001")
 URL_B = os.environ.get("DOMAIN_B_URL", "http://127.0.0.1:9002")
@@ -167,6 +167,12 @@ class Control:
         self.waiting = None
 
 
+class Revoker(Protocol):
+    """Anything that can revoke a token; DomainClient does."""
+
+    async def revoke(self, jti: str, reason: str) -> Reply: ...
+
+
 @dataclass
 class TokenRec:
     role: str
@@ -180,7 +186,7 @@ async def apply_live_revokes(
     rep: Reporter,
     ctl: Control,
     tokens: dict[str, TokenRec],
-    clients: dict[str, DomainClient],
+    clients: Mapping[str, Revoker],
 ) -> list[str]:
     """Revoke every agent the presenter asked for since the last check."""
     done: list[str] = []
