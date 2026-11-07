@@ -1,4 +1,4 @@
-﻿fastapi>=0.115.0
+fastapi>=0.115.0
 uvicorn[standard]>=0.34.0
 pydantic>=2.10.0
 pydantic-settings>=2.7.0
@@ -12,7 +12,6 @@ cryptography>=44.0.0
 python-dotenv>=1.0.1
 httpx>=0.28.1
 websockets>=14.1
-crewai>=0.95.0
 python-multipart>=0.0.19
 pytest>=8.3.4
 pytest-asyncio>=0.25.0
@@ -22,3 +21,4 @@ greenlet>=3.1.1
 matplotlib
 pandas
 psutil
+groq>=0.37.1

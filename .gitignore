@@ -50,3 +50,7 @@ logs/
 # Local editor settings and SQLTools scratch files
 .vscode/
 *.session.sql
+
+demo-runs/
+benchmarks/charts/quick/
+benchmarks/results/quick/

@@ -116,6 +116,9 @@ class DomainClient:
             json={"task_id": task_id, "agent_name": agent, "task_role": role},
         )
 
+    async def protected(self, token: str) -> Reply:
+        return await self._call("GET", "/demo/protected", token=token)
+
     async def contribute(
         self, token: str, task_id: str, agent: str, kind: str, content: str
     ) -> Reply:
