@@ -5,13 +5,13 @@
   --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
-  --color-bg: #070b14;
-  --color-panel: #0c1322;
-  --color-raised: #121b30;
-  --color-line: #1e2a46;
-  --color-fg: #e7ecf6;
-  --color-dim: #8f9bb8;
-  --color-faint: #5d6a8a;
+  --color-bg: #050816;
+  --color-panel: #0a1030;
+  --color-raised: #111a3e;
+  --color-line: #1f2c58;
+  --color-fg: #e9eeff;
+  --color-dim: #94a3cc;
+  --color-faint: #5f6e9a;
 
   --color-domain-a: #38bdf8;
   --color-domain-b: #a78bfa;
@@ -25,6 +25,12 @@
   --color-tokens: #fbbf24;
   --color-audit: #fb7185;
   --color-bench: #e879f9;
+
+  --color-researcher: #38bdf8;
+  --color-analyst: #fb923c;
+  --color-writer: #a78bfa;
+  --color-reviewer: #f472b6;
+  --color-auditor: #facc15;
 }
 
 /* The current section sets --accent on its wrapper; utilities read it from here. */
@@ -47,11 +53,10 @@ body {
   margin: 0;
   background-color: var(--color-bg);
   background-image:
-    radial-gradient(60rem 36rem at 85% -10%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%),
-    linear-gradient(var(--color-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
-  background-size: auto, 44px 44px, 44px 44px;
-  background-position: 0 0, -1px -1px, -1px -1px;
+    radial-gradient(52rem 30rem at 92% -8%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+    radial-gradient(44rem 28rem at -6% 108%, color-mix(in srgb, var(--color-domain-b) 13%, transparent), transparent 70%),
+    radial-gradient(color-mix(in srgb, var(--color-line) 85%, transparent) 1px, transparent 1.2px);
+  background-size: auto, auto, 26px 26px;
   background-attachment: fixed;
   color: var(--color-fg);
   font-family: var(--font-sans);
@@ -71,4 +76,33 @@ body {
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--color-line) transparent;
+}
+
+/* Dashed flow lines: the dash offset moves along the path, so data seems to travel. */
+@keyframes flow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+.flow-line {
+  stroke-dasharray: 6 6;
+  animation: flow 0.9s linear infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-line {
+    animation: none;
+  }
 }

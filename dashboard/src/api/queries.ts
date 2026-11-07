@@ -6,6 +6,7 @@ import type {
   Contribution,
   PeerStatus,
   ProcessMetrics,
+  RunSummary,
   ScenarioConfig,
   TrustDomain,
   VerificationResult,
@@ -84,6 +85,14 @@ export function useScenarioConfig() {
   return useQuery({
     queryKey: ['scenario-config'],
     queryFn: async () => (await api.a.get<ScenarioConfig>('/scenarios/config')).data,
+  })
+}
+
+export function useRunHistory() {
+  return useQuery({
+    queryKey: ['run-history'],
+    refetchInterval: 6000,
+    queryFn: async () => (await api.a.get<{ runs: RunSummary[] }>('/scenarios/runs')).data.runs,
   })
 }
 

@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import type { CSSProperties } from 'react'
 import { useLocation, useOutlet } from 'react-router-dom'
-import { Footer } from './Footer'
 import { Header } from './Header'
 import { NAV } from './nav'
 import { Sidebar } from './Sidebar'
@@ -29,7 +28,6 @@ export function AppShell() {
             </motion.div>
           </AnimatePresence>
         </main>
-        <Footer />
       </div>
     </div>
   )

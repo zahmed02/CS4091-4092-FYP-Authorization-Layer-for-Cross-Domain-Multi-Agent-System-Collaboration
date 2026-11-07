@@ -133,6 +133,11 @@ class Ctx:
         self.rep.stage(role, home, stage, f"{role} was refused: {code}")
         return False
 
+    def waiting(self, role: str, home: str, note: str) -> None:
+        """Mark an agent as waiting for its turn, unless it was just revoked."""
+        if not self.tokens[role].revoked:
+            self.rep.stage(role, home, "waiting", note)
+
     def working(self, role: str, home: str) -> None:
         """Mark an agent as working, unless it was just revoked."""
         if not self.tokens[role].revoked:
@@ -288,7 +293,7 @@ async def _pair(ctx: Ctx, scenario: str, revoke_after: int) -> Outcome:
     await ctx.step("Researcher gathers notes")
     facts = await gather_facts(ctx, researcher)
     ctx.working("researcher", "domain-a")
-    rep.stage("writer", "domain-b", "waiting", "writer waits for the research")
+    ctx.waiting("writer", "domain-b", "writer waits for the research")
 
     for i, fact in enumerate(facts):
         if scenario == "revoke" and i == revoke_after:
@@ -499,7 +504,7 @@ async def _team(ctx: Ctx) -> Outcome:
         ("writer", "domain-b", "writer waits for the analysis"),
         ("reviewer", "domain-a", "reviewer waits for the summary"),
     ):
-        rep.stage(role, home, "waiting", text)
+        ctx.waiting(role, home, text)
     for i, fact in enumerate(facts):
         await ctx.step(f"Researcher sends fact {i + 1} of {len(facts)} to Domain B")
         if not ctx.judge(

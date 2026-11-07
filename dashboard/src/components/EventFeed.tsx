@@ -7,6 +7,17 @@ import { clock, shortId } from '../lib/format'
 import { Panel } from '../ui/Panel'
 import { EVENT_META, FALLBACK_META } from './eventMeta'
 
+// Not every audit event carries a token id; show the next most useful detail.
+function detailOf(e: { token_id: string | null; team_id: string | null; detail: Record<string, unknown> | null }): string {
+  if (e.token_id) return shortId(e.token_id)
+  const d = e.detail ?? {}
+  for (const key of ['reason_code', 'task_id', 'role', 'reason']) {
+    const v = d[key]
+    if (typeof v === 'string' && v) return v.length > 18 ? `${v.slice(0, 18)}…` : v
+  }
+  return e.team_id ? `team ${shortId(e.team_id, 6)}` : ''
+}
+
 export function EventFeed({ limit = 14 }: { limit?: number }) {
   const a = useAuditEvents('a', 50)
   const b = useAuditEvents('b', 50)
@@ -52,7 +63,7 @@ export function EventFeed({ limit = 14 }: { limit?: number }) {
                     <meta.icon size={15} style={{ color: meta.color }} className="shrink-0" />
                     <span className="truncate font-semibold">{meta.label}</span>
                   </span>
-                  <span className="font-mono text-xs text-dim">{shortId(e.token_id)}</span>
+                  <span className="font-mono text-xs text-dim">{detailOf(e)}</span>
                 </motion.li>
               )
             })}

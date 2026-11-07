@@ -65,14 +65,15 @@ export interface PeerSyncResult {
   duration_ms: number
 }
 
-export type ScenarioName = 'normal' | 'revoke' | 'scope' | 'expired'
+export type ScenarioName = 'normal' | 'revoke' | 'scope' | 'expired' | 'team'
 export type RunStatus = 'running' | 'completed' | 'failed'
+export type Pace = 'fast' | 'slow' | 'step'
 
 export interface ScenarioEvent {
   seq: number
   t: number
   actor: string
-  kind: 'info' | 'issue' | 'verdict' | 'revoke' | 'abort' | 'summary' | 'done'
+  kind: 'info' | 'issue' | 'stage' | 'wait' | 'llm' | 'verdict' | 'revoke' | 'abort' | 'summary' | 'done'
   message: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: Record<string, any>
@@ -81,15 +82,37 @@ export interface ScenarioEvent {
 export interface ScenarioRun {
   run_id: string
   scenario: ScenarioName
+  topic: string
   revoke_after: number
   status: RunStatus
   exit_code: number | null
   error: string | null
+  mode: Pace
+  waiting: string | null
+  started_at: number
   events: ScenarioEvent[]
 }
 
+export interface RunSummary {
+  run_id: string
+  scenario: ScenarioName
+  topic: string
+  status: RunStatus
+  exit_code: number | null
+  started_at: number
+  event_count: number
+  duration_s: number
+}
+
 export interface ScenarioConfig {
+  scenarios: ScenarioName[]
+  roles: string[]
+  default_topic: string
   fact_count: number
+  llm_enabled: boolean
+  llm_model: string
   writer_mode: 'groq' | 'template'
   active_runs: number
+  expiry_ttl_seconds: number
+  clock_skew_seconds: number
 }
