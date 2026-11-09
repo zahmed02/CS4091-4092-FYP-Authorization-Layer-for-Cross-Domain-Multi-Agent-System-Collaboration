@@ -39,7 +39,7 @@ export function EventDialog({
                   Life of token <span className="font-mono">{shortId(row.jti)}</span>
                 </p>
                 <Button variant="ghost" className="!px-3 !py-1" onClick={() => onFollow(row.jti!)}>
-                  <Crosshair size={14} /> Follow in table
+                  <Crosshair size={14} /> Follow in trace
                 </Button>
               </div>
               <ol className="space-y-1.5">

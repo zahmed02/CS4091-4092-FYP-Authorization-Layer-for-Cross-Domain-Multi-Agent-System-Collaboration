@@ -10,7 +10,7 @@ export function Tokens() {
   return (
     <div className="space-y-6">
       <TrustPanel />
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
+      <div className="grid items-start gap-6 2xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
         <IssueForm onIssued={setIssued} />
         <RevocationLab issued={issued} />
       </div>

@@ -106,3 +106,19 @@ body {
     animation: none;
   }
 }
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orbit {
+  animation: orbit 90s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit {
+    animation: none;
+  }
+}
