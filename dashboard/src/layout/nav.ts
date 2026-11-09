@@ -1,4 +1,4 @@
-import { KeyRound, LayoutDashboard, Network } from 'lucide-react'
+import { KeyRound, LayoutDashboard, Network, ScrollText } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 export interface NavItem {
@@ -30,5 +30,12 @@ export const NAV: NavItem[] = [
     summary: 'Issue, revoke and verify tokens; keys and sync',
     icon: KeyRound,
     color: 'var(--color-tokens)',
+  },
+  {
+    path: '/audit',
+    label: 'Audit',
+    summary: 'Every decision both domains recorded',
+    icon: ScrollText,
+    color: 'var(--color-audit)',
   },
 ]
