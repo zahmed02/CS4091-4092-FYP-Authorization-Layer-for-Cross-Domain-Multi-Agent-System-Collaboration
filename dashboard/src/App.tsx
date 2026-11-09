@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import { AppShell } from './layout/AppShell'
 import { Collaboration } from './pages/Collaboration'
 import { Overview } from './pages/Overview'
+import { Tokens } from './pages/Tokens'
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route index element={<Overview />} />
           <Route path="collaboration" element={<Collaboration />} />
+          <Route path="tokens" element={<Tokens />} />
         </Route>
       </Routes>
     </MotionConfig>
