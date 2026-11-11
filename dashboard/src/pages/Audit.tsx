@@ -1,11 +1,11 @@
-import { Activity, Download, Pause, Play, ScrollText, Search } from 'lucide-react'
+import { Download, Pause, Play, ScrollText, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { DOMAIN_KEYS, DOMAINS } from '../api/client'
 import type { DomainKey } from '../api/client'
 import { useAuditFeed } from '../api/audit'
 import { AuditCharts } from '../components/audit/AuditCharts'
-import { HoverLine, TraceTimeline } from '../components/audit/TraceTimeline'
-import type { Spacing } from '../components/audit/TraceTimeline'
+import { TraceBoard } from '../components/audit/TraceBoard'
+import type { View } from '../components/audit/TraceBoard'
 import { EventDialog } from '../components/audit/EventDialog'
 import { EVENT_ORDER, describe, reachTimes, reasonOf, toCsv, toRows } from '../components/audit/model'
 import type { Row } from '../components/audit/model'
@@ -55,10 +55,8 @@ export function Audit() {
   const [live, setLive] = useState(true)
   const [shown, setShown] = useState(PAGE)
   const [selected, setSelected] = useState<Row | null>(null)
-  const [hovered, setHovered] = useState<Row | null>(null)
   const [followed, setFollowed] = useState<string | null>(null)
-  const [spacing, setSpacing] = useState<Spacing>('even')
-  const [count, setCount] = useState(80)
+  const [view, setView] = useState<View>('run')
   const a = useAuditFeed('a', limit, live)
   const b = useAuditFeed('b', limit, live)
 
@@ -113,6 +111,8 @@ export function Audit() {
           hint={`${reach.length} revocation${reach.length === 1 ? '' : 's'} recorded at both domains`}
         />
       </div>
+
+      <TraceBoard rows={all} view={view} onView={setView} followed={followed} onFollow={setFollowed} onSelect={setSelected} />
 
       <Panel
         title="Filters"
@@ -208,49 +208,6 @@ export function Audit() {
         )}
       </Panel>
 
-      <Panel
-        title="Trace"
-        icon={<Activity size={16} />}
-        aside={
-          <div className="flex flex-wrap items-center gap-1.5">
-            {[40, 80, 160, 320].map((c) => (
-              <Chip key={c} on={count === c} onClick={() => setCount(c)}>
-                Latest {c}
-              </Chip>
-            ))}
-            <span className="mx-1 h-4 w-px bg-line" />
-            <Chip on={spacing === 'even'} onClick={() => setSpacing('even')}>
-              Even spacing
-            </Chip>
-            <Chip on={spacing === 'real'} onClick={() => setSpacing('real')}>
-              Real time
-            </Chip>
-          </div>
-        }
-      >
-        {followed && (
-          <p className="mb-3 flex flex-wrap items-center gap-2 text-xs text-dim">
-            Following token <span className="font-mono text-fg">{shortId(followed)}</span>. The arrows show its journey across both domains.
-            <Button variant="ghost" className="!px-2.5 !py-1" onClick={() => setFollowed(null)}>
-              Stop following
-            </Button>
-          </p>
-        )}
-        <TraceTimeline rows={rows} count={count} spacing={spacing} followed={followed} hovered={hovered} onHover={setHovered} onSelect={setSelected} />
-        <HoverLine row={hovered} />
-        <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-dim">
-          {EVENT_ORDER.map((t) => {
-            const m = EVENT_META[t] ?? FALLBACK_META
-            return (
-              <li key={t} className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full" style={{ background: t === 'token_rejected' ? 'transparent' : m.color, border: `2px solid ${m.color}` }} />
-                {m.label}
-              </li>
-            )
-          })}
-        </ul>
-      </Panel>
-
       <AuditCharts rows={rows} />
 
       <details className="rounded-2xl border border-line bg-panel/80 p-5">
@@ -320,6 +277,7 @@ export function Audit() {
         onClose={() => setSelected(null)}
         onFollow={(jti) => {
           setFollowed(jti)
+          setView('token')
           setSelected(null)
         }}
       />
